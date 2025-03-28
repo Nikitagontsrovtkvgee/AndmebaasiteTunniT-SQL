@@ -32,11 +32,11 @@ values (1, 'Female')
 insert into Gender (Id, Gender)
 values (2, 'Male')
 
---- ?
+--- lisamine välisvõtme piirangu
 alter table Person add constraint tblPerson_GenderId_FK
 foreign key (GenderId) references Gender(Id)
 
--- ?
+-- lisamine 7 uut kirjet tabelisse
 insert into Person (Id, Name, Email, GenderId)
 values (1, 'Supermees', 's@s.com', 2)
 insert into Person (Id, Name, Email, GenderId)
@@ -55,11 +55,11 @@ values (7, 'Spiderman', 'spider@spiderman.com', 2)
 -- vaatame tabeli andmeid
 select * from Person
 
---- ?
+--- eemaldab välisvõtme
 alter table Person
 drop constraint tblPerson_GenderId_FK
 
--- ?
+-- lisamine uue kirje tabelisse
 insert into Gender (Id, Gender)
 values (3, 'Unknown')
 -- lisame võõrvõtme uuesti
@@ -74,7 +74,7 @@ select * from Gender
 insert into Person (Id, Name, Email)
 values (8, 'Test', 'Test')
 
----?
+--- lisamine uue veeru Age
 alter table Person
 add Age nvarchar(10)
 
@@ -83,14 +83,14 @@ update Person
 set Age = 149
 where Id = 8
 
---?
+-- Uue piirangu lisamine
 alter table Person
 add constraint CK_Person_Age check (Age > 0 and Age < 150)
 
 insert into Person (Id, Name, Email, GenderId, Age)
 values (9, 'Test', 'Test', 2, 160)
 
---?
+--kuvamine kõik kirjed tabelist Person, seejärel kustutab kirje, mille Id = 8, ja kuvab jälle kõik kirjed.
 select * from Person
 go
 delete from Person where Id = 8
@@ -101,7 +101,7 @@ select * from Person
 alter table Person
 add City nvarchar(25)
 
--- ?
+-- kuvamine kõik kirjed tabelist Person, kus veeru City väärtus on 'Gotham'.
 select * from Person where City = 'Gotham'
 
 
@@ -109,37 +109,37 @@ select * from Person where City = 'Gotham'
 select * from Person where City <> 'Gotham'
 select * from Person where City != 'Gotham'
 
--- ?
-select *from Person where Age = 100 or 
+-- Esimene päring valib kõik kirjed tabelist Person, kus vanus on 100, 50 või 20. Tingimused on ühendatud läbi OR. Teine päring teeb sama, kuid kasutab konstruktsiooni IN, mis on kompaktsem.
+select * from Person where Age = 100 or 
 Age = 50 or Age = 20
 select * from Person where Age in (100, 50, 20)
 
 
---- ?
+--- Valib kõik read, kus linn algab tähega "n". Valib kõik read, kus e-posti aadress sisaldab märki "@".
 select * from Person where City like 'n%'
 select * from Person where Email like '%@%'
 
--- ?
+-- kõigi ridade valimine tabelist Person, mille veerus Email ei ole sümbolit „@“.
 select * from Person where Email not like '%@%'
 
 --- näitab, kelle on emailis ees ja peale @-märki
 -- ainult üks täht
 select * from Person where Email like '_@_.com'
 
---?
+-- valib kõik tabelis Person olevad read, mille väärtus veerus Name algab mis tahes tähemärgiga, välja arvatud „W“, „A“ või „S“.
 select * from Person where Name like '[^WAS]%'
---- ?
+--- Valib kõik read tabelist Person, kus: Linn peab olema kas „Gotham“ või „New York“; Vanus peab olema suurem või võrdne 40 aastaga.
 select * from Person where (City = 'Gotham' or City = 'New York')
 and Age >= 40
 
 ---võtab kolm esimest rida
 select top 3 * from Person
 
---- ?
+--- esimene päring väljastab kogu teabe tabelist ja teine päring väljastab ainult kolm esimest kirjet koos vanuse ja nimega.
 select * from Person
 select top 3 Age, Name from Person
 
---- ?
+--- valib esimesed 50% ridadest tabelist Person. See tagastab kõik veerud (nagu on määratud *-ga), kuid ainult poole tabeli kirjete koguarvust.
 select top 50 percent * from Person
 --?
 select * from Person order by cast(Age as int)
